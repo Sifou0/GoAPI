@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
@@ -142,12 +143,20 @@ func withJWTAuth(handlerFunc http.HandlerFunc) http.HandlerFunc {
 }
 
 func createJWT(account *Account) (string, error) {
+	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	// 	"accountNumber": account.Number,
+	// })
+	// tokenString, err := token.SignedString("ismail")
+	// return tokenString, err
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"accountNumber": account.Number,
+		"foo": "bar",
+		"nbf": time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
 	})
-	tokenString, err := token.SignedString("ismail")
-	return tokenString, err
 
+	// Sign and get the complete encoded token as a string using the secret
+	tokenString, err := token.SignedString([]byte("hmacSampleSecret"))
+
+	return tokenString, err
 }
 
 func validateJWT(tokenString string) (*jwt.Token, error) {
